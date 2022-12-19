@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\SekolahController;
 use App\Http\Controllers\UserController;
+use App\Http\Middleware\WithAuth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,9 +18,22 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// Route::get('/', function () {
+//     return view('welcome');
+// })->name("homepage")->middleware(['withAuth']);
 Route::get('/', function () {
-    return view('welcome');
-})->name("homepage");
+    return view('frontend.index');
+})->name("index");
+
+Route::get('/add', function () {
+    return view('frontend.add');
+})->name("add");
+
+Route::get('/detail/{id}', function ($id) {
+    return view('frontend.detail', ["id" => $id]);
+})->name("detail");
+
+// ---------------------
 
 Route::prefix("nftx")->group(function () {
     Route::get("/", [LandingController::class, 'home'])
@@ -33,15 +48,19 @@ Route::prefix("nftx")->group(function () {
         ->name("reviews");
 });
 // -------------------------------
-Route::prefix("user")->group(function () {
-    Route::get("/list", [UserController::class, "index"])->name("user.list");
-    Route::get("/detail/{id}", [UserController::class, "detail"])->name("user.detail");
-    Route::get("/store", [UserController::class, "store"])->name("user.store");
+Route::prefix("user")
+    ->name("user.")
+    ->controller(UserController::class)
+    ->group(function () {
+        Route::get("/list", "index")->name("list");
+        Route::get("/detail/{id}", "detail")->name("detail");
+        Route::get("/store", "store")->name("store");
 
-    Route::post("/create", [UserController::class, "create"])->name("user.create");
-    Route::put("/update/{id}", [UserController::class, "update"])->name("user.update");
-    Route::get("/destroy/{id}", [UserController::class, "destroy"])->name("user.destroy");
-});
+        Route::post("/create", "create")->name("create");
+        Route::put("/update/{id}", "update")->name("update");
+        Route::get("/destroy/{id}", "destroy")->name("destroy");
+    });
+// ---------------------------
 Route::prefix("sekolah")->group(function () {
     Route::get("/list", [SekolahController::class, "index"])->name("sekolah.list");
     Route::get("/detail/{id}", [SekolahController::class, "detail"])->name("sekolah.detail");
@@ -56,7 +75,12 @@ Route::prefix("v1")->group(function () {
     Route::get("/landing", [LandingController::class, 'landing'])
         ->name("landing");
 });
+
+Route::any("/upload", [LandingController::class, "upload"])->name("upload");
 //--------------------------------
+
+Route::any('/login', [AuthController::class, 'login'])->name('login')->middleware(['noAuth']);
+Route::any('/logout', [AuthController::class, 'logout'])->name('logout')->middleware(['withAuth']);
 // Route::get("/landing", [LandingController::class, 'landing'])
 //     ->prefix("v1")
 //     ->name("landing");

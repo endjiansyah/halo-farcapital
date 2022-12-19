@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use function PHPUnit\Framework\returnSelf;
+
 class LandingController extends Controller
 {
     // function landing(Request $request)
@@ -49,5 +51,16 @@ class LandingController extends Controller
         return view('reviews', [
             "judul" => "Reviews"
         ]);
+    }
+
+    function upload(Request $request)
+    {
+        if ($request->method() == "GET") return view('upload');
+        $file = $request->file("gambar");
+        // $file->move("gambar", $file->getClientOriginalName()); // upload gambar dengan nama yang sama
+        $file->move("gambar", $file->hashName()); // upload gambar & acak nama gambar (hash)
+        $path = $request->getHost() . "/gambar/" . $file->hashName();
+        // $path = $request->getSchemeAndHttpHost()."/gambar/".$file->hashName();
+        return redirect()->back();
     }
 }

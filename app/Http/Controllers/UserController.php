@@ -39,6 +39,19 @@ class UserController extends Controller
 
     function create(Request $request)
     {
+        // $request->get('nama');
+        // $request->all();
+        // $request->post('nama');
+        // $request->acceptsJson();
+        // $request->acceptsHtml();
+        // $request->allFiles();
+        // $request->bearerToken();
+        // $request->session();
+        // $request->url();
+        // Bearer <token>
+        // username:password
+        // <token>
+
         $payload = [
             "nama" => $request->input("nama"),
             "email" => $request->input("email"),
